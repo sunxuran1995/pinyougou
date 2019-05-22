@@ -36,13 +36,14 @@
                 itemsPerPage: 10,
                 perPageOptions: [10, 20, 30, 40, 50],
                 onChange: function(){
-                    $scope.reloadList();//重新加载
+                    $scope.reloadList();
                 }
             };
-
+			//刷新列表
 			$scope.reloadList=function(){
-			    $scope.findPage($scope.paginationConf.currentPage,$scope.paginationConf.itemsPerPage);
+			    $scope.search($scope.paginationConf.currentPage,$scope.paginationConf.itemsPerPage);
 			}
+			//分页
 			$scope.findPage=function (page,size) {
                 $http.get('../brand/findPage.do?page='+page+'&size='+size).success(
                     function (response) {
@@ -51,7 +52,61 @@
                     }
                 );
             }
-
+			//新增
+			$scope.save=function () {
+			    var methodName='add';//方法名
+				if ($scope.entity.id!=null){
+                    methodName='update';
+				}
+				$http.post('../brand/'+methodName+'.do',$scope.entity).success(
+				    function (response) {
+						if (response.success){
+                            $scope.reloadList();
+						}else{
+						    alert(response.message);
+						}
+                    }
+				)
+            }
+            //查询实体
+			$scope.findOne=function (id) {
+				$http.get('../brand/findOne.do?id='+id).success(
+				  function (response) {
+					  $scope.entity=response;
+                  }
+				);
+            }
+            $scope.selectIds=[];//用户勾选id的集合
+			$scope.updateSelection=function ($event,id) {
+			    if ($event.target.checked) {
+                    $scope.selectIds.push(id);//向集合中添加元素
+				}else{
+                    var index = $scope.selectIds.indexOf(id);//查找值得位置
+                    $scope.selectIds.splice(index,1);
+				}
+            }
+            //删除
+            $scope.dele=function () {
+				$http.get('../brand/delete.do?ids='+$scope.selectIds).success(
+				    function (response) {
+						if (response.success){
+						    $scope.reloadList();
+						} else{
+						    alert(response.message);
+						}
+                    }
+				);
+            }
+            //查询
+            $scope.searchEntity={};
+			$scope.search=function (page,size) {
+                $http.post('../brand/search.do?page='+page+'&size='+size,$scope.searchEntity).success(
+                    function (response) {
+                        $scope.list=response.rows;
+                        $scope.paginationConf.totalItems=response.total;
+                    }
+                );
+            }
         });
 	</script>
 </head>
@@ -70,15 +125,15 @@
                             <div class="pull-left">
                                 <div class="form-group form-inline">
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-default" title="新建" data-toggle="modal" data-target="#editModal" ><i class="fa fa-file-o"></i> 新建</button>
-                                        <button type="button" class="btn btn-default" title="删除" ><i class="fa fa-trash-o"></i> 删除</button>           
+                                        <button type="button" class="btn btn-default" title="新建" data-toggle="modal" data-target="#editModal" ng-click="entity={}"><i class="fa fa-file-o"></i> 新建</button>
+                                        <button type="button" class="btn btn-default" title="删除" ng-click="dele()"><i class="fa fa-trash-o"></i> 删除</button>
                                         <button type="button" class="btn btn-default" title="刷新" onclick="window.location.reload();"><i class="fa fa-refresh"></i> 刷新</button>
                                     </div>
                                 </div>
                             </div>
                             <div class="box-tools pull-right">
                                 <div class="has-feedback">
-							                                         
+							        品牌名称:<input ng-model="searchEntity.name">品牌首字母:<input ng-model="searchEntity.firstChar"><button type="button" class="btn btn-default" ng-click="reloadList()">查询</button>
                                 </div>
                             </div>
                             <!--工具栏/-->
@@ -98,12 +153,12 @@
 			                      </thead>
 			                      <tbody>
 			                          <tr ng-repeat="entity in list">
-			                              <td><input  type="checkbox" ></td>			                              
+			                              <td><input  type="checkbox" ng-click="updateSelection($event,entity.id)"></td>
 				                          <td>{{entity.id}}</td>
 									      <td>{{entity.name}}</td>
 		                                  <td>{{entity.firstChar}}</td>
 		                                  <td class="text-center">                                           
-		                                 	  <button type="button" class="btn bg-olive btn-xs" data-toggle="modal" data-target="#editModal"  >修改</button>                                           
+		                                 	  <button type="button" class="btn bg-olive btn-xs" data-toggle="modal" data-target="#editModal" ng-click="findOne(entity.id)" >修改</button>
 		                                  </td>
 			                          </tr>
 			                      </tbody>
@@ -115,8 +170,6 @@
 
 						</div>
                         <!-- 数据表格 /-->
-                        
-                        
                         
                         
                      </div>
@@ -134,16 +187,16 @@
 			<table class="table table-bordered table-striped"  width="800px">
 		      	<tr>
 		      		<td>品牌名称</td>
-		      		<td><input  class="form-control" placeholder="品牌名称" >  </td>
+		      		<td><input  class="form-control" placeholder="品牌名称" ng-model="entity.name">  </td>
 		      	</tr>		      	
 		      	<tr>
 		      		<td>首字母</td>
-		      		<td><input  class="form-control" placeholder="首字母">  </td>
+		      		<td><input  class="form-control" placeholder="首字母" ng-model="entity.firstChar">  </td>
 		      	</tr>		      	
 			 </table>				
 		</div>
 		<div class="modal-footer">						
-			<button class="btn btn-success" data-dismiss="modal" aria-hidden="true">保存</button>
+			<button class="btn btn-success" data-dismiss="modal" aria-hidden="true" ng-click="save()">保存</button>
 			<button class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</button>
 		</div>
 	  </div>
