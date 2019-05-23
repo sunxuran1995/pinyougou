@@ -1,6 +1,8 @@
 package com.pinyougou.sellergoods.service.impl;
 
 import java.util.List;
+import java.util.Map;
+
 import com.alibaba.dubbo.config.annotation.Service;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -68,5 +70,10 @@ public class BrandServiceImpl implements BrandService {
 		}
 		Page<TbBrand> page = (Page<TbBrand>) brandMapper.selectByExample(example);
 		return new PageResult(page.getTotal(),page.getResult());
+	}
+
+	@Override
+	public List<Map> selectOptionList() {
+		return brandMapper.selectOptionList();
 	}
 }
