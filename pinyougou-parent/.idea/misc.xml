@@ -19,13 +19,13 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
-        <option value="$PROJECT_DIR$/pinyougou-common/pom.xml" />
         <option value="$PROJECT_DIR$/pinyougou-pojo/pom.xml" />
         <option value="$PROJECT_DIR$/pinyougou-dao/pom.xml" />
         <option value="$PROJECT_DIR$/pinyougou-sellergoods-interface/pom.xml" />
         <option value="$PROJECT_DIR$/pinyougou-sellergoods-service/pom.xml" />
         <option value="$PROJECT_DIR$/pinyougou-shop-web/pom.xml" />
         <option value="$PROJECT_DIR$/pinyougou-manager-web/pom.xml" />
+        <option value="$PROJECT_DIR$/pinyougou-common/pom.xml" />
       </list>
     </option>
   </component>
